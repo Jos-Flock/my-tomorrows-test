@@ -13,11 +13,11 @@ export class StudyService {
 
   constructor(private readonly http: HttpClient) { }
 
-  public list(limit: number, nextPageToken?: string): Observable<ListResponse<Study>> {
+  public list(pageSize: number, nextPageToken?: string): Observable<ListResponse<Study>> {
     const options = nextPageToken ? {
-      params: new HttpParams().set('pageSize', limit).set('pageToken', nextPageToken)
+      params: new HttpParams().set('pageSize', pageSize).set('pageToken', nextPageToken)
     } : {
-      params: new HttpParams().set('pageSize', limit)
+      params: new HttpParams().set('pageSize', pageSize)
     };
     return this.http.get(API_BASE_URL + '/studies', options).pipe(
       map((apiResult: any) => {
