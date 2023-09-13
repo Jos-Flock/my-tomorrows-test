@@ -13,6 +13,8 @@ export class StudyListComponent implements OnInit {
   private limit: number = 10;
 
   public studies: Study[] = [];
+  public pollingStatus: boolean = false;
+  public progressPercentage: number = 0;
 
   constructor(private readonly studyDataHelperService: StudyDataHelperService) {
   }
@@ -21,10 +23,12 @@ export class StudyListComponent implements OnInit {
     this.studyDataHelperService.init(this.limit);
 
     this.studyDataHelperService.currentStudies$.subscribe(rows => this.studies = rows )
+    this.studyDataHelperService.currentPollingStatus$.subscribe(status => this.pollingStatus = status);
+    this.studyDataHelperService.currentProgressPercentage$.subscribe(status => this.progressPercentage = (status / 100));
   }
 
-  handleClick(): void {
-    this.studyDataHelperService.nextPage();
+  handleToggleTimer(): void {
+    this.studyDataHelperService.togglePolling();
   }
 
 }
