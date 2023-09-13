@@ -1,4 +1,9 @@
 <div class="flow">
-  <button (click)="handleClick()">Next</button>
-  <app-study *ngFor="let study of studies" [study]="study"></app-study>
+  <div class="flow-inline align-baseline" style="--flow-space: .5rem;">
+    <button (click)="handleToggleTimer()">Toggle timer</button>
+    <span *ngIf="pollingStatus" i18n>: On</span>
+    <span *ngIf="!pollingStatus" i18n>: Off</span>
+<!--    <span>: {{progressPercentage | percent: '1.0-0' }}</span>-->
+  </div>
+  <app-study-card *ngFor="let study of studies" [study]="study"></app-study-card>
 </div>
