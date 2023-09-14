@@ -8,7 +8,6 @@ describe('StudyService', () => {
   let httpClient: jest.Mocked<HttpClient>
 
   beforeEach(() => {
-
     httpClient = {
       get: jest.fn().mockReturnValue(of({
         nextPageToken: 'nextTokenParamToTest',
