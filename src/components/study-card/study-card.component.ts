@@ -8,10 +8,5 @@ import {Study} from "../../models/study";
 })
 export class StudyCardComponent {
 
-  @Input() study: Study;
-
-  constructor() {
-    this.study = {} as Study;
-  }
-
+  @Input() study!: Study;
 }
