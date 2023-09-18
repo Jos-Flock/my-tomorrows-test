@@ -1,21 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {Study} from "../models/study";
-import {StudyDataHelperService} from "../helpers/study-data-helper.service";
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-
-  public studies: Study[] = [];
-
-  constructor(private readonly studyService: StudyDataHelperService) {
-  }
-
-  ngOnInit(): void {
-    this.studyService.currentStudies$.subscribe(rows => this.studies = rows )
-  }
+export class AppComponent {
 
 }
