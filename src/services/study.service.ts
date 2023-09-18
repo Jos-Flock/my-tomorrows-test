@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {map, Observable } from "rxjs";
 import {Study} from "../models/study";
-import {Rows} from "../models/Rows";
+import {ListResponse} from "../models/ListResponse";
 
 const API_BASE_URL: string = 'https://clinicaltrials.gov/api/v2';
 
@@ -13,10 +13,15 @@ export class StudyService {
 
   constructor(private readonly http: HttpClient) { }
 
-  public list(): Observable<Rows<Study>> {
-    return this.http.get(API_BASE_URL + '/studies').pipe(
+  public list(limit: number, nextPageToken?: string): Observable<ListResponse<Study>> {
+    const options = nextPageToken ? {
+      params: new HttpParams().set('pageSize', limit).set('pageToken', nextPageToken)
+    } : {
+      params: new HttpParams().set('pageSize', limit)
+    };
+    return this.http.get(API_BASE_URL + '/studies', options).pipe(
       map((apiResult: any) => {
-        return new Rows<Study>(apiResult.totalCount, Study.convertList(apiResult.studies))
+        return new ListResponse<Study>(apiResult.nextPageToken, Study.convertList(apiResult.studies))
       }));
   }
 }
