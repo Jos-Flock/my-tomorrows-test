@@ -1,8 +1,6 @@
 <article>
   <header [title]="study.officialTitle">
-    <div
-      style="display: flex; flex-flow: row; justify-content: space-between; margin-block-end: 1em"
-    >
+    <div class="flex-row space-between margin-bottom-1">
       <span>{{ study.nctId }}</span>
       <app-status [status]="study.overallStatus"></app-status>
     </div>
