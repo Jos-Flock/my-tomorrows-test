@@ -12,6 +12,7 @@
     "lint:style": "stylelint \"src/**/*.scss\"",
     "ng": "ng",
     "prepare": "husky install",
+    "release": "commit-and-tag-version",
     "start": "ng serve",
     "build": "ng build",
     "build:ci": "ng build --output-path docs --base-href /my-tomorrows-test/",
@@ -86,5 +87,10 @@
     "*.(ts|js)": "eslint --cache --fix",
     "*.(s|css)": "stylelint --fix",
     "*.format:*": "prettier --write"
+  },
+  "commit-and-tag-version": {
+    "scripts": {
+      "postchangelog": "npm run format:prettier"
+    }
   }
 }
