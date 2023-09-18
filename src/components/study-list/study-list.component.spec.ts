@@ -1,6 +1,6 @@
 import { StudyListComponent } from './study-list.component';
-import {StudyDataHelperService} from "../../helpers/study-data-helper.service";
-import {of, Subject} from "rxjs";
+import { StudyDataHelperService } from '../../helpers/study-data-helper.service';
+import { of, Subject } from 'rxjs';
 
 describe('StudyListComponent', () => {
   let component: StudyListComponent;
@@ -12,12 +12,13 @@ describe('StudyListComponent', () => {
   beforeEach(() => {
     currentStudiesSubject = new Subject<void>();
     currentPollingSubject = new Subject<boolean>();
+    // @ts-ignore
     studyDataHelperService = {
       init: jest.fn(),
       togglePolling: jest.fn(),
       getCurrentStudiesObservable: jest.fn().mockReturnValue(of(currentStudiesSubject)),
       getPollingStatusObservable: jest.fn().mockReturnValue(of(currentPollingSubject)),
-    } as any;
+    };
 
     component = new StudyListComponent(studyDataHelperService);
     component.ngOnInit();
