@@ -1,11 +1,11 @@
-import { DEFAULT_STUDY_LIMIT, StudyDataHelperService } from './study-data-helper.service';
-import { StudyService } from '../services/study.service';
+import { DEFAULT_STUDY_LIMIT, StudyDataService } from './study-data.service';
+import { StudyService } from './study.service';
 import { of } from 'rxjs';
 import { createTestListResponse } from '../test/models/list-response';
 import { createTestStudy } from '../test/models/study-test';
 
 describe('StudyDataHelperService', () => {
-  let service: StudyDataHelperService;
+  let service: StudyDataService;
   let studyService: jest.Mocked<StudyService>;
 
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('StudyDataHelperService', () => {
         .mockReturnValue(of(createTestListResponse([createTestStudy(), createTestStudy()]))),
     };
 
-    service = new StudyDataHelperService(studyService);
+    service = new StudyDataService(studyService);
   });
 
   it('should be created', () => {
@@ -91,7 +91,22 @@ describe('StudyDataHelperService', () => {
       expect(studyService.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 2 times for the pollingTimer
     });
 
-    // TODO: Check of einde pagina er is
+    it('should automatically stop polling when last page is reached', (done) => {
+      studyService.list
+        .mockReturnValue( of( createTestListResponse([
+            createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')
+        ])))
+        .mockReturnValue(of( createTestListResponse([
+          createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')
+        ], null)));
+
+      jest.advanceTimersByTime(msToRunTimer + 5);
+      expect(studyService.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 1 for the pollingTimer
+      service.getPollingStatusObservable().subscribe(result => {
+        expect(result).toBe('Off'); // the isPolling should be false
+        done();
+      });
+    })
   });
 
   describe('togglePolling', () => {
@@ -99,7 +114,7 @@ describe('StudyDataHelperService', () => {
       service.init(DEFAULT_STUDY_LIMIT);
       service.togglePolling();
       service.getPollingStatusObservable().subscribe(result => {
-        expect(result).toBe(true);
+        expect(result).toBe('On');
         done();
       });
     });
