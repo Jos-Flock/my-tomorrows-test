@@ -1,17 +1,20 @@
-import {DEFAULT_STUDY_LIMIT, StudyDataHelperService} from './study-data-helper.service';
-import {StudyService} from "../services/study.service";
-import {of} from "rxjs";
-import {createTestListResponse} from "../test/models/list-response";
-import {createTestStudy} from "../test/models/study-test";
+import { DEFAULT_STUDY_LIMIT, StudyDataHelperService } from './study-data-helper.service';
+import { StudyService } from '../services/study.service';
+import { of } from 'rxjs';
+import { createTestListResponse } from '../test/models/list-response';
+import { createTestStudy } from '../test/models/study-test';
 
 describe('StudyDataHelperService', () => {
   let service: StudyDataHelperService;
   let studyService: jest.Mocked<StudyService>;
 
   beforeEach(() => {
+    // @ts-ignore
     studyService = {
-      list: jest.fn().mockReturnValue(of(createTestListResponse([createTestStudy(), createTestStudy()])))
-    } as any;
+      list: jest
+        .fn()
+        .mockReturnValue(of(createTestListResponse([createTestStudy(), createTestStudy()]))),
+    };
 
     service = new StudyDataHelperService(studyService);
   });
@@ -33,8 +36,12 @@ describe('StudyDataHelperService', () => {
   });
 
   describe('addStudyToStudiesList', () => {
-    it('should keep studies count === studyLimit', (done) => {
-      studyService.list.mockReturnValue(of(createTestListResponse([createTestStudy(), createTestStudy('nieuwe'), createTestStudy()])));
+    it('should keep studies count === studyLimit', done => {
+      studyService.list.mockReturnValue(
+        of(
+          createTestListResponse([createTestStudy(), createTestStudy('nieuwe'), createTestStudy()]),
+        ),
+      );
       service.init(2);
 
       service.getCurrentStudiesObservable().subscribe(result => {
@@ -43,10 +50,16 @@ describe('StudyDataHelperService', () => {
       });
     });
 
-    it('should remove oldest study', (done) => {
-      studyService.list.mockReturnValue(of(createTestListResponse([
-        createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')
-      ])));
+    it('should remove oldest study', done => {
+      studyService.list.mockReturnValue(
+        of(
+          createTestListResponse([
+            createTestStudy('new'),
+            createTestStudy('newer'),
+            createTestStudy('newest'),
+          ]),
+        ),
+      );
       service.init(2);
 
       service.getCurrentStudiesObservable().subscribe(result => {
@@ -58,7 +71,7 @@ describe('StudyDataHelperService', () => {
   });
 
   describe('startPollingTimer', () => {
-    let msToRunTimer: number = 200;
+    const msToRunTimer = 200;
     beforeEach(() => {
       jest.useFakeTimers(); // Turn on fake timers
       // Init the service with a shorter interval for speeding up unit testing and start the pollingTimer
@@ -79,11 +92,10 @@ describe('StudyDataHelperService', () => {
     });
 
     // TODO: Check of einde pagina er is
-
   });
 
   describe('togglePolling', () => {
-    it('should toggle isRunning', (done) => {
+    it('should toggle isRunning', done => {
       service.init(DEFAULT_STUDY_LIMIT);
       service.togglePolling();
       service.getPollingStatusObservable().subscribe(result => {
@@ -91,7 +103,5 @@ describe('StudyDataHelperService', () => {
         done();
       });
     });
-
   });
-
 });

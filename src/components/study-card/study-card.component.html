@@ -1,12 +1,12 @@
 <div class="card flow">
   <div class="flex-row space-between align-baseline" [title]="study.officialTitle">
-    <h2>{{study.briefTitle}}</h2>
+    <h2>{{ study.briefTitle }}</h2>
     <div class="flow-inline">
-      <span>{{study.nctId}}</span>
+      <span>{{ study.nctId }}</span>
       <app-status [status]="study.overallStatus"></app-status>
     </div>
   </div>
   <div [title]="study.detailedDescription">
-    {{study.briefSummary}}
+    {{ study.briefSummary }}
   </div>
 </div>

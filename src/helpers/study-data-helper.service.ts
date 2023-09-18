@@ -1,40 +1,31 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {StudyService} from "../services/study.service";
-import {Study} from "../models/study";
-import {
-  BehaviorSubject,
-  Observable,
-  Subscription,
-  takeWhile,
-  timer
-} from "rxjs";
-import {cloneDeep} from "lodash";
+import { Injectable, OnDestroy } from '@angular/core';
+import { StudyService } from '../services/study.service';
+import { Study } from '../models/study';
+import { BehaviorSubject, Observable, Subscription, takeWhile, timer } from 'rxjs';
 
-const DEFAULT_POLLING_INTERVAL_MS: number = 5000; // 5 seconds
-export const DEFAULT_STUDY_LIMIT: number = 10;
+const DEFAULT_POLLING_INTERVAL_MS = 5000; // 5 seconds
+export const DEFAULT_STUDY_LIMIT = 10;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StudyDataHelperService implements OnDestroy {
-
-  private isRunning: boolean = false;
+  private isRunning = false;
   private studies$ = new BehaviorSubject<Study[]>([]);
   private progressPercentage$ = new BehaviorSubject<number>(0);
   private pollingStatus$ = new BehaviorSubject<boolean>(this.isRunning);
   private studiesList: Study[] = [];
   private settings: {
-    studyLimit: number,
-    pollingInterval: number,
-    nextPageToken?: string,
-  } = { studyLimit: DEFAULT_STUDY_LIMIT, pollingInterval: DEFAULT_POLLING_INTERVAL_MS};
+    studyLimit: number;
+    pollingInterval: number;
+    nextPageToken?: string;
+  } = { studyLimit: DEFAULT_STUDY_LIMIT, pollingInterval: DEFAULT_POLLING_INTERVAL_MS };
   private pollingTimer!: Subscription;
 
-  constructor(private readonly studyService: StudyService) {
-  }
+  constructor(private readonly studyService: StudyService) {}
 
   private fetchData(pageLimit: number = this.settings.studyLimit) {
-    this.studyService.list(pageLimit, this.settings?.nextPageToken).subscribe((response) => {
+    this.studyService.list(pageLimit, this.settings?.nextPageToken).subscribe(response => {
       if (response.nextPageToken) {
         this.settings.nextPageToken = response.nextPageToken;
       }
@@ -63,11 +54,11 @@ export class StudyDataHelperService implements OnDestroy {
 
   private startPollingTimer(): void {
     // TODO: Uitzoeken of de timer() zelf destroyed?
-    this.pollingTimer = timer(0, this.settings.pollingInterval).pipe(
-      takeWhile(() => this.isRunning)
-    ).subscribe(() => {
-      this.fetchData(1);
-    });
+    this.pollingTimer = timer(0, this.settings.pollingInterval)
+      .pipe(takeWhile(() => this.isRunning))
+      .subscribe(() => {
+        this.fetchData(1);
+      });
   }
 
   public init(studyLimit: number, pollingIntervalMs: number = DEFAULT_POLLING_INTERVAL_MS): void {
@@ -99,5 +90,4 @@ export class StudyDataHelperService implements OnDestroy {
     this.progressPercentage$.complete();
     this.pollingTimer.unsubscribe();
   }
-
 }
