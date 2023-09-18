@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { StudyService } from '../services/study.service';
+import { StudyService } from './study.service';
 import { Study } from '../models/study';
 import { BehaviorSubject, Observable, Subscription, takeWhile, timer } from 'rxjs';
 
@@ -9,11 +9,10 @@ export const DEFAULT_STUDY_LIMIT = 10;
 @Injectable({
   providedIn: 'root',
 })
-export class StudyDataHelperService implements OnDestroy {
-  private isRunning = false;
+export class StudyDataService implements OnDestroy {
+  private isPolling = false;
   private studies$ = new BehaviorSubject<Study[]>([]);
-  private progressPercentage$ = new BehaviorSubject<number>(0);
-  private pollingStatus$ = new BehaviorSubject<boolean>(this.isRunning);
+  private pollingStatus$ = new BehaviorSubject<'On' | 'Off'>('Off');
   private studiesList: Study[] = [];
   private settings: {
     studyLimit: number;
@@ -25,9 +24,14 @@ export class StudyDataHelperService implements OnDestroy {
   constructor(private readonly studyService: StudyService) {}
 
   private fetchData(pageLimit: number = this.settings.studyLimit) {
-    this.studyService.list(pageLimit, this.settings?.nextPageToken).subscribe(response => {
-      if (response.nextPageToken) {
+    this.studyService.list(pageLimit, this.settings.nextPageToken).subscribe(response => {
+      if (!response.isLastPage() && response.nextPageToken) {
         this.settings.nextPageToken = response.nextPageToken;
+      } else {
+        // this is the last page, so stop polling if this is still running
+        if (this.isPolling) {
+          this.togglePolling();
+        }
       }
       this.addStudyToStudiesList(response.items);
     });
@@ -53,9 +57,8 @@ export class StudyDataHelperService implements OnDestroy {
   }
 
   private startPollingTimer(): void {
-    // TODO: Uitzoeken of de timer() zelf destroyed?
     this.pollingTimer = timer(0, this.settings.pollingInterval)
-      .pipe(takeWhile(() => this.isRunning))
+      .pipe(takeWhile(() => this.isPolling))
       .subscribe(() => {
         this.fetchData(1);
       });
@@ -68,10 +71,10 @@ export class StudyDataHelperService implements OnDestroy {
   }
 
   public togglePolling(): void {
-    this.isRunning = !this.isRunning;
-    this.pollingStatus$.next(this.isRunning);
+    this.isPolling = !this.isPolling;
+    this.pollingStatus$.next(this.isPolling ? 'On' : 'Off');
 
-    if (this.isRunning) {
+    if (this.isPolling) {
       this.startPollingTimer();
     }
   }
@@ -80,14 +83,13 @@ export class StudyDataHelperService implements OnDestroy {
     return this.studies$.asObservable();
   }
 
-  public getPollingStatusObservable(): Observable<boolean> {
+  public getPollingStatusObservable(): Observable<'On' | 'Off'> {
     return this.pollingStatus$.asObservable();
   }
 
   ngOnDestroy() {
     this.studies$.complete();
     this.pollingStatus$.complete();
-    this.progressPercentage$.complete();
     this.pollingTimer.unsubscribe();
   }
 }
