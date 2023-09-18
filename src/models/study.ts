@@ -82,7 +82,3 @@ export class Study {
     return studyArray;
   }
 }
-
-
-
-// title, id, description, status
