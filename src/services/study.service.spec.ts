@@ -1,13 +1,12 @@
-import { TestBed } from '@angular/core/testing';
-
 import { StudyService } from './study.service';
+import {HttpClient} from "@angular/common/http";
 
 describe('StudyService', () => {
   let service: StudyService;
+  let httpService: jest.Mocked<HttpClient>
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(StudyService);
+    service = new StudyService(httpService);
   });
 
   it('should be created', () => {
