@@ -3,7 +3,6 @@
     <button (click)="handleToggleTimer()">Toggle timer</button>
     <span *ngIf="pollingStatus" i18n>: On</span>
     <span *ngIf="!pollingStatus" i18n>: Off</span>
-<!--    <span>: {{progressPercentage | percent: '1.0-0' }}</span>-->
   </div>
-  <app-study-card *ngFor="let study of studies" [study]="study"></app-study-card>
+  <app-study-card *ngFor="let study of studiesSubject | async" [study]="study"></app-study-card>
 </div>
