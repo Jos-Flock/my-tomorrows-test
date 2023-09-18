@@ -11,19 +11,19 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class StudyListComponent implements OnInit {
   private limit = 10;
 
-  public studiesSubject: Subject<Study[]> = new Subject();
-  public pollingStatus = false;
+  public studiesSubject$: Subject<Study[]> = new Subject();
+  public pollingStatusSubject$: Subject<string> = new BehaviorSubject('Off');
 
-  constructor(private readonly studyDataHelperService: StudyDataHelperService) {}
+  constructor(private readonly studyDataHelperService: StudyDataService) {}
 
   ngOnInit(): void {
     this.studyDataHelperService.init(this.limit);
     this.studyDataHelperService
       .getCurrentStudiesObservable()
-      .subscribe(rows => this.studiesSubject.next(rows));
+      .subscribe(rows => this.studiesSubject$.next(rows));
     this.studyDataHelperService
       .getPollingStatusObservable()
-      .subscribe(status => (this.pollingStatus = status));
+      .subscribe(newStatus => this.pollingStatusSubject$.next(newStatus));
   }
 
   handleToggleTimer(): void {
