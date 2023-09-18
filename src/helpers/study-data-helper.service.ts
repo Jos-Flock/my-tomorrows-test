@@ -9,16 +9,32 @@ import {BehaviorSubject} from "rxjs";
 export class StudyDataHelperService {
 
   private studies$ = new BehaviorSubject<Study[]>([]);
+  private settings: {
+    limit: number,
+    nextPageToken?: string,
+  } = { limit: 10 };
 
   public currentStudies$ = this.studies$.asObservable();
 
   constructor(private readonly studyService: StudyService) {
-    this.fetchData();
+
   }
 
   private fetchData(): void {
-    this.studyService.list().subscribe((rows) =>
-      this.studies$.next(rows.rows)
-    );
+    this.studyService.list(this.settings.limit, this.settings?.nextPageToken).subscribe((rows) => {
+      if (rows.nextPageToken) {
+        this.settings.nextPageToken = rows.nextPageToken;
+      }
+      this.studies$.next(rows.items)
+    });
+  }
+
+  public init(limit: number): void {
+    this.settings.limit = limit;
+    this.fetchData();
+  }
+
+  public nextPage(): void {
+    this.fetchData();
   }
 }
