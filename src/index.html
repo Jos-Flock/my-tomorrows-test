@@ -10,16 +10,5 @@
   </head>
   <body>
     <app-root></app-root>
-    <script>
-      function switcher() {
-        const theme = document.documentElement.getAttribute('data-theme');
-        console.log(theme);
-        const isDark = theme === 'dark';
-        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        document.querySelector('#theme-switcher').innerHTML = `<i>Turn ${
-          isDark ? 'on' : 'off'
-        } dark mode`;
-      }
-    </script>
   </body>
 </html>
