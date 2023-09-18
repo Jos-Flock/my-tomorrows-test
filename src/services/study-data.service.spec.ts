@@ -91,14 +91,25 @@ describe('StudyDataHelperService', () => {
       expect(studyService.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 2 times for the pollingTimer
     });
 
-    it('should automatically stop polling when last page is reached', (done) => {
+    it('should automatically stop polling when last page is reached', done => {
       studyService.list
-        .mockReturnValue( of( createTestListResponse([
-            createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')
-        ])))
-        .mockReturnValue(of( createTestListResponse([
-          createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')
-        ], null)));
+        .mockReturnValue(
+          of(
+            createTestListResponse([
+              createTestStudy('new'),
+              createTestStudy('newer'),
+              createTestStudy('newest'),
+            ]),
+          ),
+        )
+        .mockReturnValue(
+          of(
+            createTestListResponse(
+              [createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')],
+              null,
+            ),
+          ),
+        );
 
       jest.advanceTimersByTime(msToRunTimer + 5);
       expect(studyService.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 1 for the pollingTimer
@@ -106,7 +117,7 @@ describe('StudyDataHelperService', () => {
         expect(result).toBe('Off'); // the isPolling should be false
         done();
       });
-    })
+    });
   });
 
   describe('togglePolling', () => {
