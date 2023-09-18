@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { StudyDataHelperService } from '../../helpers/study-data-helper.service';
+import { StudyDataService } from '../../services/study-data.service';
 import { Study } from '../../models/study';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-study-list',
   templateUrl: './study-list.component.html',
-  providers: [StudyDataHelperService],
-  styleUrls: ['./study-list.component.scss'],
+  providers: [StudyDataService],
 })
 export class StudyListComponent implements OnInit {
   private limit = 10;
