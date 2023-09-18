@@ -10,8 +10,7 @@ import {
 
 @Component({
   selector: 'app-status',
-  templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss']
+  templateUrl: './status.component.html'
 })
 export class StatusComponent {
   ACTIVE_NOT_RECRUITING: ACTIVE_NOT_RECRUITING = "ACTIVE_NOT_RECRUITING";
