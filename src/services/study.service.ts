@@ -22,8 +22,8 @@ export class StudyService {
     return this.http.get<PagedStudies>(API_BASE_URL + '/studies', { params: httpParams }).pipe(
       map(apiResult => {
         return new ListResponse<Study>(
-          apiResult.nextPageToken,
           Study.convertList(apiResult.studies),
+          apiResult.nextPageToken ?? null,
         );
       }),
     );
