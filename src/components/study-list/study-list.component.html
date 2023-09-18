@@ -1,5 +1,4 @@
-<button (click)="handleClick()">Next</button>
-<ul *ngFor="let study of studies">
-  <li>{{study.nctId}} | {{study.briefTitle}} | {{study.officialTitle}} | {{study.overallStatus}} |
-    {{study.briefSummary}}</li>
-</ul>
+<div class="flow" style="--flow-space: 1.5rem;">
+  <button (click)="handleClick()">Next</button>
+  <app-study *ngFor="let study of studies" [study]="study"></app-study>
+</div>
