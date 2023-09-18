@@ -1,0 +1,8 @@
+.card {
+  padding-inline: 1.5rem;
+  padding-block: 1.5rem;
+  border: thin solid var(--card-border-color, #000000);
+  border-radius: .75rem;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+}
