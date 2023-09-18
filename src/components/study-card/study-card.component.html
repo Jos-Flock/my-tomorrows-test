@@ -1,12 +1,14 @@
-<div class="card flow">
-  <div class="flex-row space-between align-baseline" [title]="study.officialTitle">
-    <h2>{{ study.briefTitle }}</h2>
-    <div class="flow-inline">
+<article>
+  <header [title]="study.officialTitle">
+    <div
+      style="display: flex; flex-flow: row; justify-content: space-between; margin-block-end: 1em"
+    >
       <span>{{ study.nctId }}</span>
       <app-status [status]="study.overallStatus"></app-status>
     </div>
-  </div>
-  <div [title]="study.detailedDescription">
-    {{ study.briefSummary }}
-  </div>
-</div>
+    <h2>{{ study.briefTitle }}</h2>
+  </header>
+  <p [title]="study.detailedDescription" style="white-space: pre-wrap">
+    <span [innerHTML]="study.briefSummary | markdown"></span>
+  </p>
+</article>
