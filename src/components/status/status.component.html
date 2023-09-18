@@ -1,0 +1,17 @@
+<ng-container [ngSwitch]="status">
+  <span *ngSwitchCase="ACTIVE_NOT_RECRUITING" i18n>Active not recruiting</span>
+  <span *ngSwitchCase="COMPLETED" i18n>Completed</span>
+  <span *ngSwitchCase="ENROLLING_BY_INVITATION" i18n>Enrolling by invitation</span>
+  <span *ngSwitchCase="NOT_YET_RECRUITING" i18n>Not yet recruiting</span>
+  <span *ngSwitchCase="RECRUITING" i18n>Recruiting</span>
+  <span *ngSwitchCase="SUSPENDED" i18n>Suspended</span>
+  <span *ngSwitchCase="TERMINATED" i18n>Terminated</span>
+  <span *ngSwitchCase="WITHDRAWN" i18n>Withdrawn</span>
+  <span *ngSwitchCase="AVAILABLE" i18n>Available</span>
+  <span *ngSwitchCase="NO_LONGER_AVAILABLE" i18n>No longer available</span>
+  <span *ngSwitchCase="TEMPORARILY_NOT_AVAILABLE" i18n>Temporarily not available</span>
+  <span *ngSwitchCase="APPROVED_FOR_MARKETING" i18n>Approved for marketing</span>
+  <span *ngSwitchCase="WITHHELD" i18n>Withheld</span>
+  <span *ngSwitchCase="UNKNOWN" i18n>Unknown</span>
+  <span *ngSwitchDefault>-</span>
+</ng-container>
