@@ -7,6 +7,7 @@ import { StudyListComponent } from './components/study-list/study-list.component
 import { StudyCardComponent } from './components/study-card/study-card.component';
 import { StatusComponent } from './components/status/status.component';
 import { MarkdownPipe } from './directives/markdown.pipe';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { MarkdownPipe } from './directives/markdown.pipe';
     StudyListComponent,
     StudyCardComponent,
     StatusComponent,
-    MarkdownPipe
+    MarkdownPipe,
+    NavbarComponent,
   ],
   imports: [BrowserModule, HttpClientModule],
   providers: [],
