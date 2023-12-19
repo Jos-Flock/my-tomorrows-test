@@ -1,31 +1,95 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { internalizeStudy, StudyClient } from '../clients/study.client';
 import { Study } from '../models/study';
-import { ListResponse } from '../models/listResponse';
-import { PagedStudies } from '../models/external-api/pagedStudies';
+import { BehaviorSubject, Observable, Subscription, takeWhile, timer } from 'rxjs';
 
-const API_BASE_URL = 'https://clinicaltrials.gov/api/v2';
+const DEFAULT_POLLING_INTERVAL_MS = 5000; // 5 seconds
+export const DEFAULT_STUDY_LIMIT = 10;
 
 @Injectable({
   providedIn: 'root',
 })
-export class StudyService {
-  constructor(private readonly http: HttpClient) {}
+export class StudyService implements OnDestroy {
+  private isPolling = false;
+  private studies$ = new BehaviorSubject<Study[]>([]);
+  private pollingStatus$ = new BehaviorSubject<'On' | 'Off'>('Off');
+  private studiesList: Study[] = [];
+  private settings: {
+    studyLimit: number;
+    pollingInterval: number;
+  } = { studyLimit: DEFAULT_STUDY_LIMIT, pollingInterval: DEFAULT_POLLING_INTERVAL_MS };
+  private nextPageToken: string | undefined = undefined;
+  private pollingTimer!: Subscription;
 
-  public list(pageSize: number, nextPageToken?: string): Observable<ListResponse<Study>> {
-    let httpParams: HttpParams = new HttpParams();
-    httpParams = httpParams.append('pageSize', pageSize);
-    if (nextPageToken) {
-      httpParams = httpParams.append('pageToken', nextPageToken);
+  constructor(private readonly studyService: StudyClient) {}
+
+  private fetchData(pageLimit: number = this.settings.studyLimit) {
+    this.studyService.list(pageLimit, this.nextPageToken).subscribe(response => {
+      if (response.nextPageToken !== null) {
+        this.nextPageToken = response.nextPageToken;
+      } else {
+        // this is the last page, so stop polling if this is still running
+        if (this.isPolling) {
+          this.togglePolling();
+        }
+      }
+      this.addStudyToStudiesList(response.studies.map(internalizeStudy));
+    });
+  }
+
+  private addStudyToStudiesList(studies: Study[]): void {
+    // can hold max this.settings.studyLimit (10)
+    // set the current studiesList as starting point
+    const newStudiesList: Study[] = this.studiesList;
+
+    studies.forEach((study: Study) => {
+      // check if there is room for another Study in the newStudiesList
+      if (newStudiesList.length === this.settings.studyLimit) {
+        // there is no room left, so remove one
+        newStudiesList.shift();
+      }
+      newStudiesList.push(study);
+    });
+    // copy the newStudiesList into the studiesList
+    this.studiesList = newStudiesList;
+
+    this.studies$.next(newStudiesList);
+  }
+
+  private startPollingTimer(): void {
+    this.pollingTimer = timer(0, this.settings.pollingInterval)
+      .pipe(takeWhile(() => this.isPolling))
+      .subscribe(() => {
+        this.fetchData(1);
+      });
+  }
+
+  public init(studyLimit: number, pollingIntervalMs: number = DEFAULT_POLLING_INTERVAL_MS): void {
+    this.settings.studyLimit = studyLimit;
+    this.settings.pollingInterval = pollingIntervalMs;
+    this.fetchData();
+  }
+
+  public togglePolling(): void {
+    this.isPolling = !this.isPolling;
+    this.pollingStatus$.next(this.isPolling ? 'On' : 'Off');
+
+    if (this.isPolling) {
+      this.startPollingTimer();
     }
-    return this.http.get<PagedStudies>(API_BASE_URL + '/studies', { params: httpParams }).pipe(
-      map(apiResult => {
-        return new ListResponse<Study>(
-          Study.convertList(apiResult.studies),
-          apiResult.nextPageToken ?? null,
-        );
-      }),
-    );
+  }
+
+  public getCurrentStudiesObservable(): Observable<Study[]> {
+    return this.studies$.asObservable();
+  }
+
+  public getPollingStatusObservable(): Observable<'On' | 'Off'> {
+    return this.pollingStatus$.asObservable();
+  }
+
+  ngOnDestroy() {
+    this.studies$.complete();
+    this.pollingStatus$.complete();
+    this.pollingTimer.unsubscribe();
   }
 }

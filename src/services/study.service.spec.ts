@@ -1,102 +1,132 @@
-import { StudyService } from './study.service';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { DEFAULT_STUDY_LIMIT, StudyService } from './study.service';
+import { StudyClient } from '../clients/study.client';
 import { of } from 'rxjs';
-import { STUDY_JSON } from '../test/models/study-test';
+import { createTestListResponse } from '../test/models/list-response';
+import { createTestStudy } from '../test/models/study-test';
 
-describe('StudyService', () => {
+describe('StudyHelperService', () => {
   let service: StudyService;
-  let httpClient: jest.Mocked<HttpClient>;
+  let studyClient: jest.Mocked<StudyClient>;
 
   beforeEach(() => {
     // @ts-ignore
-    httpClient = {
-      get: jest.fn().mockReturnValue(
+    studyClient = {
+      list: jest.fn().mockReturnValue(
         of({
-          nextPageToken: 'nextTokenParamToTest',
-          studies: [STUDY_JSON, STUDY_JSON],
+          nextPageToken: 'nextPageToken',
+          studies: [createTestStudy(), createTestStudy()],
+          totalCount: 2,
         }),
       ),
     };
 
-    service = new StudyService(httpClient);
+    service = new StudyService(studyClient);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('list', () => {
-    const nextPageToken = 'nextTokenParamToTest';
-    let params: HttpParams;
+  describe('fetchData', () => {
+    it('should pass on the default pageLimit', () => {
+      service.init(DEFAULT_STUDY_LIMIT);
+      expect(studyClient.list).toHaveBeenCalledWith(DEFAULT_STUDY_LIMIT, undefined);
+    });
 
-    it('should add pageSize param', done => {
-      service.list(100).subscribe(() => {
-        params = httpClient.get.mock.calls[0][1]?.params as HttpParams;
-        const pageSizeValue = params.get('pageSize');
-        const nextPageTokenValue = params.get('pageToken');
+    it('should pass on the given pageLimit', () => {
+      service.init(20);
+      expect(studyClient.list).toHaveBeenCalledWith(20, undefined);
+    });
+  });
 
-        expect(pageSizeValue).toBe('100');
-        expect(nextPageTokenValue).toBeNull();
+  describe('addStudyToStudiesList', () => {
+    it('should keep studies count === studyLimit', done => {
+      studyClient.list.mockReturnValue(
+        of({
+          nextPageToken: 'nextPageToken',
+          studies: [createTestStudy(), createTestStudy('nieuwe'), createTestStudy()],
+          totalCount: 3,
+        }),
+      );
+      service.init(2);
+
+      service.getCurrentStudiesObservable().subscribe(result => {
+        expect(result.length).toBe(2);
         done();
       });
     });
 
-    it('should add nextPageToken param', done => {
-      service.list(100, nextPageToken).subscribe(() => {
-        params = httpClient.get.mock.calls[0][1]?.params as HttpParams;
-        const pageSizeValue = params.get('pageSize');
-        const nextPageTokenValue = (httpClient.get.mock.calls[0][1]?.params as HttpParams).get(
-          'pageToken',
-        );
+    it('should remove oldest study', done => {
+      studyClient.list.mockReturnValue(
+        of({
+          nextPageToken: 'nextPageToken',
+          studies: [createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')],
+          totalCount: 3,
+        }),
+      );
+      service.init(2);
 
-        expect(pageSizeValue).toBe('100');
-        expect(nextPageTokenValue).toBe(nextPageToken);
+      service.getCurrentStudiesObservable().subscribe(result => {
+        expect(result[0].nctId).toBe('newer');
+        expect(result[1].nctId).toBe('newest');
         done();
       });
     });
+  });
 
-    it('should convert the response to a ListResponse', done => {
-      service.list(100, nextPageToken).subscribe(mockedResult => {
-        expect(mockedResult.nextPageToken).toBe(nextPageToken);
-        expect(mockedResult.items.length).toBe(2);
-        // first item
-        expect(mockedResult.items[0].nctId).toBe(
-          STUDY_JSON.protocolSection.identificationModule.nctId,
+  describe('startPollingTimer', () => {
+    const msToRunTimer = 200;
+    beforeEach(() => {
+      jest.useFakeTimers(); // Turn on fake timers
+      // Init the service with a shorter interval for speeding up unit testing and start the pollingTimer
+      service.init(DEFAULT_STUDY_LIMIT, msToRunTimer);
+      service.togglePolling();
+    });
+
+    it('should call studyService 3 times', () => {
+      jest.advanceTimersByTime(msToRunTimer + 5); // make sure the timer is triggered once
+      service.togglePolling(); // turn of the pollingTimer
+      expect(studyClient.list).toHaveBeenCalledTimes(3); // 1 for the service.init + 2 times for the pollingTimer
+    });
+
+    it('should call studyService twice if timer is stopped before first completion', () => {
+      jest.advanceTimersByTime(msToRunTimer * 0.5); // make sure the timer is triggered once
+      service.togglePolling(); // turn of the pollingTimer
+      expect(studyClient.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 2 times for the pollingTimer
+    });
+
+    it('should automatically stop polling when last page is reached', done => {
+      studyClient.list
+        .mockReturnValue(
+          of({
+            nextPageToken: 'nextPageToken',
+            studies: [createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')],
+            totalCount: 3,
+          }),
+        )
+        .mockReturnValue(
+          of({
+            nextPageToken: null,
+            studies: [createTestStudy('new'), createTestStudy('newer'), createTestStudy('newest')],
+            totalCount: 3,
+          }),
         );
-        expect(mockedResult.items[0].briefTitle).toBe(
-          STUDY_JSON.protocolSection.identificationModule.briefTitle,
-        );
-        expect(mockedResult.items[0].officialTitle).toBe(
-          STUDY_JSON.protocolSection.identificationModule.officialTitle,
-        );
-        expect(mockedResult.items[0].overallStatus).toBe(
-          STUDY_JSON.protocolSection.statusModule.overallStatus,
-        );
-        expect(mockedResult.items[0].briefSummary).toBe(
-          STUDY_JSON.protocolSection.descriptionModule.briefSummary,
-        );
-        expect(mockedResult.items[0].detailedDescription).toBe(
-          STUDY_JSON.protocolSection.descriptionModule.detailedDescription,
-        );
-        // second item
-        expect(mockedResult.items[1].nctId).toBe(
-          STUDY_JSON.protocolSection.identificationModule.nctId,
-        );
-        expect(mockedResult.items[1].briefTitle).toBe(
-          STUDY_JSON.protocolSection.identificationModule.briefTitle,
-        );
-        expect(mockedResult.items[1].officialTitle).toBe(
-          STUDY_JSON.protocolSection.identificationModule.officialTitle,
-        );
-        expect(mockedResult.items[1].overallStatus).toBe(
-          STUDY_JSON.protocolSection.statusModule.overallStatus,
-        );
-        expect(mockedResult.items[1].briefSummary).toBe(
-          STUDY_JSON.protocolSection.descriptionModule.briefSummary,
-        );
-        expect(mockedResult.items[1].detailedDescription).toBe(
-          STUDY_JSON.protocolSection.descriptionModule.detailedDescription,
-        );
+
+      jest.advanceTimersByTime(msToRunTimer + 5);
+      expect(studyClient.list).toHaveBeenCalledTimes(2); // 1 for the service.init + 1 for the pollingTimer
+      service.getPollingStatusObservable().subscribe(result => {
+        expect(result).toBe('Off'); // the isPolling should be false
+        done();
+      });
+    });
+  });
+
+  describe('togglePolling', () => {
+    it('should toggle isRunning', done => {
+      service.init(DEFAULT_STUDY_LIMIT);
+      service.togglePolling();
+      service.getPollingStatusObservable().subscribe(result => {
+        expect(result).toBe('On');
         done();
       });
     });

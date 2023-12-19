@@ -35,33 +35,33 @@ Currently the coverage is around the 95% on `All files`.
 ### General workings
 
 The app has a couple of components which are used to display the UI. The [StudyListComponent](src/components/study-list) is the component
-which gets the `Studies` from his _own_ `StudyDataService` and makes use of the [StudyCardComponent](src/components/study-card) to show
+which gets the `Studies` from his _own_ `StudyService` and makes use of the [StudyCardComponent](src/components/study-card) to show
 the individual studies. It also has a button which can be used to toggle the polling timer. In the
 `StudyCardComponent` I make use of semantic HTML and the `StatusComponent` to convert the status to a readable text. I also make use
 of a [MarkdownPipe](src/directives/markdown.pipe.ts) to format the `study.briefSummary`.
 
 ### StudyListComponent
 
-The `StudyListComponent` has its own `StudyDataService`. This way it is possible to have multiple `StudyListComponents` that
+The `StudyListComponent` has its own `StudyService`. This way it is possible to have multiple `StudyListComponents` that
 have their own `settings` (limit of studies to show, interval of the timer).
 
 ### Services
 
-There are two major services. The [StudyService](src/services/study.service.ts) and the [StudyDataService](src/services/study-data.service.ts).
+There are two major services. The [StudyClient](src/clients/study.client.ts) and the [StudyService](src/services/study.service.ts).
 
-#### StudyService
+#### StudyClient
 
 Is the service that is responsible to handle the communication with the API. This wil also convert the
 API model into the internal model. This abstraction makes the App loosely coupled.
 
-#### StudyDataService
+#### StudyService
 
 Is the service that is responsible to handle the business logic. It is responsible to keep the number of `Studies` to a given count.
-It also has the polling timer. The `StudyDataService` reports about its status via two BehaviorSubject.
+It also has the polling timer. The `StudyService` reports about its status via two BehaviorSubject.
 
 #### PollingService
 
-Not implemented yet -> can be an improvement to move this code out of the `StudyDataService`.
+Not implemented yet -> can be an improvement to move this code out of the `StudyService`.
 
 ## Explanation of decisions taken
 
@@ -94,6 +94,6 @@ from the repository and let them generate at deployment.
 
 - Place the timer button into the `NavBarComponent`. This implies some extra work and you loose the
   ability to reuse the `StudyListComponent` with different settings.
-- Extract the pollingTimer code from the `StudyDataService` into its own service (`PollingService`). This way it can be reused in the
-  future for polling another API endpoint. It also takes out a responsibility from the `StudyDataService`.
+- Extract the pollingTimer code from the `StudyService` into its own service (`PollingService`). This way it can be reused in the
+  future for polling another API endpoint. It also takes out a responsibility from the `StudyService`.
 - Generated classes not in the repo.

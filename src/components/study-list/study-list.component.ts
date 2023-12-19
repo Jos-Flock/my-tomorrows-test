@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { StudyDataService } from '../../services/study-data.service';
-import { Study } from '../../models/study';
+import { StudyService } from '../../services/study.service';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { Study } from '../../models/study';
 
 @Component({
   selector: 'app-study-list',
   templateUrl: './study-list.component.html',
-  providers: [StudyDataService],
+  providers: [StudyService],
 })
 export class StudyListComponent implements OnInit {
   private limit = 10;
@@ -14,7 +14,7 @@ export class StudyListComponent implements OnInit {
   public studiesSubject$: Subject<Study[]> = new Subject();
   public pollingStatusSubject$: Subject<string> = new BehaviorSubject('Off');
 
-  constructor(private readonly studyDataHelperService: StudyDataService) {}
+  constructor(private readonly studyDataHelperService: StudyService) {}
 
   ngOnInit(): void {
     this.studyDataHelperService.init(this.limit);

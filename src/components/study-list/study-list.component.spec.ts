@@ -1,10 +1,10 @@
 import { StudyListComponent } from './study-list.component';
-import { StudyDataService } from '../../services/study-data.service';
+import { StudyService } from '../../services/study.service';
 import { of, Subject } from 'rxjs';
 
 describe('StudyListComponent', () => {
   let component: StudyListComponent;
-  let studyDataHelperService: jest.Mocked<StudyDataService>;
+  let studyDataHelperService: jest.Mocked<StudyService>;
 
   let currentStudiesSubject: Subject<void>;
   let currentPollingSubject: Subject<boolean>;

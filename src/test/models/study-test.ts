@@ -1,4 +1,6 @@
+import { internalizeStudy } from '../../clients/study.client';
 import { Study } from '../../models/study';
+import { Study as ApiStudy } from '../../models/external-api/study';
 
 export const STUDY_JSON = {
   protocolSection: {
@@ -17,10 +19,15 @@ export const STUDY_JSON = {
   },
 };
 
-export function createTestStudy(nctId: string | undefined = undefined): Study {
-  let studyInstance = Study.convertSingle(STUDY_JSON);
-  if (nctId !== undefined) {
-    studyInstance = { ...studyInstance, ...{ nctId } };
-  }
-  return studyInstance;
+export function createTestStudy(nctId: string | undefined = undefined): ApiStudy {
+  return {
+    ...STUDY_JSON,
+    protocolSection: {
+      ...STUDY_JSON.protocolSection,
+      identificationModule: {
+        ...STUDY_JSON.protocolSection.identificationModule,
+        nctId: nctId ?? STUDY_JSON.protocolSection.identificationModule.nctId,
+      },
+    },
+  };
 }

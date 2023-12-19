@@ -1,10 +1,5 @@
-import { Study as ApiStudy } from './external-api/study';
-import { IdentificationModule } from './external-api/identificationModule';
-import { StatusModule } from './external-api/statusModule';
-import { DescriptionModule } from './external-api/descriptionModule';
 import { Status } from './external-api/status';
 
-// TODO: Toch een enum van maken?
 export type ACTIVE_NOT_RECRUITING = 'ACTIVE_NOT_RECRUITING';
 export type COMPLETED = 'COMPLETED';
 export type ENROLLING_BY_INVITATION = 'ENROLLING_BY_INVITATION';
@@ -36,36 +31,11 @@ export type OVERALL_STATUS =
   | WITHHELD
   | UNKNOWN;
 
-export class Study {
-  constructor(
-    public nctId: string, // ProtocolSection > IdentificationModule
-    public briefTitle: string, // ProtocolSection > IdentificationModule
-    public officialTitle: string, // ProtocolSection > IdentificationModule
-    public overallStatus: OVERALL_STATUS | Status, // ProtocolSection > StatusModule
-    public briefSummary: string, // ProtocolSection > DescriptionModule
-    public detailedDescription: string, // ProtocolSection > DescriptionModule
-  ) {}
-
-  static convertSingle(apiStudy: ApiStudy): Study {
-    const identificationModule: IdentificationModule = apiStudy?.protocolSection
-      ?.identificationModule as IdentificationModule;
-    const statusModule: StatusModule = apiStudy?.protocolSection?.statusModule as StatusModule;
-    const overallStatus: OVERALL_STATUS | Status = statusModule.overallStatus ?? 'UNKNOWN';
-    const descriptionModule: DescriptionModule = apiStudy?.protocolSection
-      ?.descriptionModule as DescriptionModule;
-    return new Study(
-      identificationModule.nctId,
-      identificationModule.briefTitle,
-      identificationModule.officialTitle,
-      overallStatus,
-      descriptionModule.briefSummary,
-      descriptionModule.detailedDescription,
-    );
-  }
-
-  static convertList(data: ApiStudy[]): Study[] {
-    const studyArray: Study[] = [];
-    data.forEach(studyData => studyArray.push(Study.convertSingle(studyData)));
-    return studyArray;
-  }
-}
+export type Study = {
+  nctId: string;
+  briefTitle: string;
+  officialTitle: string;
+  overallStatus: OVERALL_STATUS | Status;
+  briefSummary: string;
+  detailedDescription: string;
+};
