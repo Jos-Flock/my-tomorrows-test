@@ -14,8 +14,7 @@ describe('StudyListComponent', () => {
     currentPollingSubject = new Subject<boolean>();
     // @ts-ignore
     studyDataHelperService = {
-      init: jest.fn(),
-      togglePolling: jest.fn(),
+      setPolling: jest.fn(),
       getCurrentStudiesObservable: jest.fn().mockReturnValue(of(currentStudiesSubject)),
       getPollingStatusObservable: jest.fn().mockReturnValue(of(currentPollingSubject)),
     };
@@ -28,13 +27,8 @@ describe('StudyListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should init the data helper service', () => {
-    expect(studyDataHelperService.init).toHaveBeenCalledTimes(1);
-    expect(studyDataHelperService.init).toHaveBeenCalledWith(10);
-  });
-
-  it('should call togglePolling', () => {
+  it('should call setPolling', () => {
     component.handleToggleTimer();
-    expect(studyDataHelperService.togglePolling).toHaveBeenCalledTimes(1);
+    expect(studyDataHelperService.setPolling).toHaveBeenCalledTimes(1);
   });
 });

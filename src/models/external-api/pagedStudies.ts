@@ -9,12 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Study } from './study';
 
 export interface PagedStudies {
-  nextPageToken?: any | null;
+  nextPageToken?: string;
   /**
    * `study` field values of type `markup` are in markdown format.
    */
-  studies: any | null;
-  totalCount?: any | null;
+  studies: Study[];
+  totalCount?: number;
 }

@@ -1,7 +1,7 @@
 <div class="flow-inline align-baseline" style="--flow-space: 0.5rem">
   <button (click)="handleToggleTimer()" i18n>
     Toggle timer
-    <span>: {{ pollingStatusSubject$ | async }}</span>
+    <span>: {{ isPolling ? 'On' : 'Off' }}</span>
   </button>
 </div>
 <app-study-card *ngFor="let study of studiesSubject$ | async" [study]="study"></app-study-card>
