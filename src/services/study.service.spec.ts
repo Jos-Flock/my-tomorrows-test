@@ -22,14 +22,8 @@ describe('StudyHelperService', () => {
     service = new StudyService(studyClient);
   });
 
-  afterEach(() => service.ngOnDestroy());
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('fetchData', () => {
-    it('should pass on the default pageLimit', () => {
+    it('should be called initially on the default pageLimit', () => {
       expect(studyClient.list).toHaveBeenCalledWith(DEFAULT_STUDY_LIMIT, undefined);
     });
   });
@@ -56,10 +50,14 @@ describe('StudyHelperService', () => {
           }),
         );
 
-      jest.advanceTimersByTime(msToRunTimer + 5);
-      expect(studyClient.list).toHaveBeenCalledTimes(1);
-      service.getPollingStatusObservable().subscribe(result => {
-        expect(result).toBe(false); // the isPolling should be false
+      service.getStudiesObservable().subscribe();
+
+      service.setPolling(true);
+      jest.advanceTimersByTime(msToRunTimer);
+
+      service.getPollingObservable().subscribe(result => {
+        expect(result).toBe(false);
+        expect(studyClient.list).toHaveBeenCalledTimes(2);
         done();
       });
     });
@@ -68,16 +66,16 @@ describe('StudyHelperService', () => {
   describe('togglePolling', () => {
     it('should setPolling to true', done => {
       service.setPolling(true);
-      service.getPollingStatusObservable().subscribe(result => {
-        expect(result).toBeTruthy();
+      service.getPollingObservable().subscribe(result => {
+        expect(result).toBe(true);
         done();
       });
     });
 
     it('should setPolling to false', done => {
       service.setPolling(false);
-      service.getPollingStatusObservable().subscribe(result => {
-        expect(result).toBeFalsy();
+      service.getPollingObservable().subscribe(result => {
+        expect(result).toBe(false);
         done();
       });
     });

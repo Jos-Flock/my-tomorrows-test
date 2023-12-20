@@ -1,15 +1,16 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { internalizeStudy, StudyClient } from '../clients/study.client';
 import { Study } from '../models/study';
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatestWith,
+  concat,
   filter,
-  flatMap,
   map,
+  mergeAll,
+  mergeMap,
   Observable,
   scan,
-  Subject,
   timer,
 } from 'rxjs';
 
@@ -19,28 +20,34 @@ export const DEFAULT_STUDY_LIMIT = 10;
 @Injectable({
   providedIn: 'root',
 })
-export class StudyService implements OnDestroy {
-  private study$ = new Subject<Study>();
-  private timer$ = timer(0, DEFAULT_POLLING_INTERVAL_MS);
+export class StudyService {
+  private readonly studies$;
   private polling$ = new BehaviorSubject<boolean>(false);
+
   private nextPageToken: string | undefined = undefined;
 
   constructor(private readonly studyClient: StudyClient) {
-    this.fetchData().subscribe(res => res.forEach(study => this.study$.next(study)));
-    combineLatest(this.timer$, this.polling$)
-      .pipe(
-        filter(([_, polling]) => polling),
-        flatMap(() => this.fetchData(1)),
-      )
-      .subscribe(res => this.study$.next(res[0]));
+    const poller = timer(0, DEFAULT_POLLING_INTERVAL_MS).pipe(
+      combineLatestWith(this.polling$),
+      filter(([_, polling]) => polling),
+      mergeMap(() => this.fetchData(1)),
+    );
+    this.studies$ = concat(this.fetchData(), poller).pipe(
+      scan((acc, cur) => [...acc, cur].slice(DEFAULT_STUDY_LIMIT * -1), [] as Study[]),
+    );
   }
 
-  private fetchData(pageLimit: number = DEFAULT_STUDY_LIMIT): Observable<Study[]> {
+  private fetchData(pageLimit: number = DEFAULT_STUDY_LIMIT): Observable<Study> {
     return this.studyClient.list(pageLimit, this.nextPageToken).pipe(
       map(res => {
-        this.nextPageToken = res.nextPageToken;
+        if (res.nextPageToken !== undefined) {
+          this.nextPageToken = res.nextPageToken;
+        } else {
+          this.setPolling(false);
+        }
         return res.studies.map(study => internalizeStudy(study));
       }),
+      mergeAll(),
     );
   }
 
@@ -48,18 +55,11 @@ export class StudyService implements OnDestroy {
     this.polling$.next(isPolling);
   }
 
-  public getCurrentStudiesObservable(): Observable<Study[]> {
-    return this.study$.pipe(
-      scan((acc, cur) => [...acc, cur].slice(DEFAULT_STUDY_LIMIT * -1), [] as Study[]),
-    );
+  public getStudiesObservable(): Observable<Study[]> {
+    return this.studies$;
   }
 
-  public getPollingStatusObservable(): Observable<boolean> {
+  public getPollingObservable(): Observable<boolean> {
     return this.polling$.asObservable();
-  }
-
-  ngOnDestroy() {
-    this.study$.complete();
-    this.polling$.complete();
   }
 }
