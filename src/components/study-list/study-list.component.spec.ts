@@ -1,6 +1,6 @@
 import { StudyListComponent } from './study-list.component';
 import { StudyService } from '../../services/study.service';
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 describe('StudyListComponent', () => {
   let component: StudyListComponent;
