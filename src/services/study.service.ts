@@ -23,8 +23,7 @@ export const DEFAULT_STUDY_LIMIT = 10;
 export class StudyService {
   private readonly studies$;
   private polling$ = new BehaviorSubject<boolean>(false);
-
-  private nextPageToken: string | undefined = undefined;
+  private nextPageToken$ = new BehaviorSubject<string | undefined>(undefined);
 
   constructor(private readonly studyClient: StudyClient) {
     const poller = timer(0, DEFAULT_POLLING_INTERVAL_MS).pipe(
@@ -38,10 +37,11 @@ export class StudyService {
   }
 
   private fetchData(pageLimit: number = DEFAULT_STUDY_LIMIT): Observable<Study> {
-    return this.studyClient.list(pageLimit, this.nextPageToken).pipe(
+    const token = this.nextPageToken$.getValue();
+    return this.studyClient.list(pageLimit, token).pipe(
       map(({ nextPageToken, studies }) => {
         if (nextPageToken !== undefined) {
-          this.nextPageToken = nextPageToken;
+          this.nextPageToken$.next(nextPageToken);
         } else {
           this.setPolling(false);
         }
