@@ -19,9 +19,9 @@ export class StudyListComponent implements OnInit {
     this.studyService
       .getStudiesObservable()
       .pipe(
-        catchError(() => {
+        catchError((_, caught) => {
           this.errorMessage = 'Unable to fetch studies from server.';
-          return [];
+          return caught;
         }),
       )
       .subscribe(rows => this.studiesSubject$.next(rows));

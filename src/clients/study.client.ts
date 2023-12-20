@@ -26,23 +26,23 @@ export class StudyClient {
     if (nextPageToken) {
       httpParams = httpParams.append('pageToken', nextPageToken);
     }
-    return this.http.get<PagedStudies>(API_BASE_URL + '/studies', { params: httpParams });
+    return this.http.get<PagedStudies>(`${API_BASE_URL}/studies`, { params: httpParams });
   }
 }
 
 export function internalizeStudy(apiStudy: ApiStudy): Study {
-  const identificationModule: IdentificationModule = apiStudy?.protocolSection
-    ?.identificationModule as IdentificationModule;
-  const statusModule: StatusModule = apiStudy?.protocolSection?.statusModule as StatusModule;
-  const overallStatus: OVERALL_STATUS | Status = statusModule.overallStatus ?? 'UNKNOWN';
-  const descriptionModule: DescriptionModule = apiStudy?.protocolSection
-    ?.descriptionModule as DescriptionModule;
+  const identificationModule: IdentificationModule | undefined =
+    apiStudy?.protocolSection?.identificationModule;
+  const statusModule: StatusModule | undefined = apiStudy?.protocolSection?.statusModule;
+  const overallStatus: OVERALL_STATUS | Status = statusModule?.overallStatus ?? 'UNKNOWN';
+  const descriptionModule: DescriptionModule | undefined =
+    apiStudy?.protocolSection?.descriptionModule;
   return {
-    nctId: identificationModule.nctId,
-    briefTitle: identificationModule.briefTitle,
-    officialTitle: identificationModule.officialTitle,
+    nctId: identificationModule?.nctId,
+    briefTitle: identificationModule?.briefTitle,
+    officialTitle: identificationModule?.officialTitle,
     overallStatus: overallStatus,
-    briefSummary: descriptionModule.briefSummary,
-    detailedDescription: descriptionModule.detailedDescription,
+    briefSummary: descriptionModule?.briefSummary,
+    detailedDescription: descriptionModule?.detailedDescription,
   };
 }
