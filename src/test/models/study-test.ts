@@ -1,5 +1,3 @@
-import { internalizeStudy } from '../../clients/study.client';
-import { Study } from '../../models/study';
 import { Study as ApiStudy } from '../../models/external-api/study';
 
 export const STUDY_JSON = {
