@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 0.0.2 (2023-12-20)
+
+### Features
+
+- add automated generation of changelog ([9578c45](https://github.com/Jos-Flock/my-tomorrows-test/commit/9578c454cccc4321c47fd38eb5af9d06caac4ada))
+- add commit and tag version configuration and release script ([186c465](https://github.com/Jos-Flock/my-tomorrows-test/commit/186c465bfd9cbac56aed05f7b33bcded2d024701))
+- add external api models ([aa7dca9](https://github.com/Jos-Flock/my-tomorrows-test/commit/aa7dca9671621a439d7e3872c5ea939b515ee819))
+- add github action for deployment ([caee81a](https://github.com/Jos-Flock/my-tomorrows-test/commit/caee81a7ffd05e9acbb2d98ef2274aad17186352))
+- add global styles ([92079d7](https://github.com/Jos-Flock/my-tomorrows-test/commit/92079d7f639899306a1e9d85e932935d5ad12721))
+- add markdown pipe to transform markdown content ([063bcdb](https://github.com/Jos-Flock/my-tomorrows-test/commit/063bcdbe0f14ab84788e5cc4f77825a8bf5789e7))
+- add open-api tool generator config ([f485605](https://github.com/Jos-Flock/my-tomorrows-test/commit/f48560583796b7bad0b7eb88c3a744bd2ac16c21))
+- add page size and next page token to service call ([2f9ce46](https://github.com/Jos-Flock/my-tomorrows-test/commit/2f9ce4623744519e7ad7cf968ce5e338f83ac831))
+- add picoCSS library as external dependency ([6d989ef](https://github.com/Jos-Flock/my-tomorrows-test/commit/6d989ef59435512468d0685913b3e6cda4b1e113))
+- add polling timer to study data service ([f8ddf8b](https://github.com/Jos-Flock/my-tomorrows-test/commit/f8ddf8beaf6c4e63cd68f706d47e5f72c7a6af77))
+- add spacing between content and navbar size ([5448f9b](https://github.com/Jos-Flock/my-tomorrows-test/commit/5448f9b48168e539ed653f485cf534311cb7d6dd))
+- add styling ([6e00f1b](https://github.com/Jos-Flock/my-tomorrows-test/commit/6e00f1b3c5f61b506da966d258dbecf172d0fcd2))
+- add test models ([9c1ba04](https://github.com/Jos-Flock/my-tomorrows-test/commit/9c1ba0437bd764efd4cc3ed3aef9b3e1d6e20c21))
+- add theme-switcher function ([4591fca](https://github.com/Jos-Flock/my-tomorrows-test/commit/4591fca10eb684850c1089b792f4dd99e0a26014))
+- add uni tests for study-list component ([54c3eda](https://github.com/Jos-Flock/my-tomorrows-test/commit/54c3edabfb796512476beb3ab4f84d288efabff1))
+- add unit test for study service ([662db4e](https://github.com/Jos-Flock/my-tomorrows-test/commit/662db4e43e108350bd31a02a2971d75fd100379e))
+- add unit test for study-data-helper ([1369ceb](https://github.com/Jos-Flock/my-tomorrows-test/commit/1369cebae7eb2c4d515f50b54ff675883b43d563))
+- add unit test for study-service ([d1b0589](https://github.com/Jos-Flock/my-tomorrows-test/commit/d1b05898e46cd33899f540ba3e7c6b0f2a9180ab))
+- add unit tests study card ([c8a559c](https://github.com/Jos-Flock/my-tomorrows-test/commit/c8a559ce7498d3174efcd89c43ae0f0e13a24670))
+- added error handling in study list ([9f9ec68](https://github.com/Jos-Flock/my-tomorrows-test/commit/9f9ec682a7e9930c707a0ea5b1a8ca844709b582))
+- change list view and add iterator over studies ([f6dd03e](https://github.com/Jos-Flock/my-tomorrows-test/commit/f6dd03e428a0b11ab67c563b190d8553b7d8d45f))
+- change polling status to rxjs BehaviorSubject ([f8e427a](https://github.com/Jos-Flock/my-tomorrows-test/commit/f8e427a41be44a1670851ac53cf1e494c5fd09d5))
+- change toggle button ([7ee5737](https://github.com/Jos-Flock/my-tomorrows-test/commit/7ee57374ee47db6e262589775790c8ff1594a3ca))
+- change toggle button ([44646df](https://github.com/Jos-Flock/my-tomorrows-test/commit/44646df01df7a02258ebbff0fbfd743ef746e751))
+- create markdown pipe ([3d66a8e](https://github.com/Jos-Flock/my-tomorrows-test/commit/3d66a8e8d908a72ac1d18f4626d65ff6d5888e27))
+- create navbar component ([81e4986](https://github.com/Jos-Flock/my-tomorrows-test/commit/81e4986b8ace4713a72f7aa9d34bf3001b30dc85))
+- create status component ([04ffe8e](https://github.com/Jos-Flock/my-tomorrows-test/commit/04ffe8ebe9a9bdb2df5a2e8bc7b019b4549c3918))
+- create study component ([dc4bec1](https://github.com/Jos-Flock/my-tomorrows-test/commit/dc4bec1a55d27b421ff26ebf89a8915aabefc34d))
+- create study data service ([35a6166](https://github.com/Jos-Flock/my-tomorrows-test/commit/35a61662ea67d0602fa2cbc722f828868eb48462))
+- create study list component ([8573071](https://github.com/Jos-Flock/my-tomorrows-test/commit/8573071ea6bb29dab4f7602b03ececf0b6de7485))
+- destructing response ([6a8d3c1](https://github.com/Jos-Flock/my-tomorrows-test/commit/6a8d3c13d29f2cb6ce657287a48312053c78dbe8))
+- implement study data serivce via subject ([78a42d4](https://github.com/Jos-Flock/my-tomorrows-test/commit/78a42d40328bd25862cb8114ad8b18df64c75dfb))
+- implement study service ([40d2cf6](https://github.com/Jos-Flock/my-tomorrows-test/commit/40d2cf61e563b28098d680175c9210c5949dc081))
+- implement the start/stop of the polling timer and show the polling timer status ([4e09e36](https://github.com/Jos-Flock/my-tomorrows-test/commit/4e09e3645b07f58124062796882ffaa886d92fcf))
+- make next page token optional ([417894c](https://github.com/Jos-Flock/my-tomorrows-test/commit/417894c1f7cc7c3ec0b5591ad7b450df1e67216d))
+- remove karma testing and add jest ([d49053a](https://github.com/Jos-Flock/my-tomorrows-test/commit/d49053a368e84aa124855ca02649989e8a477541))
+- update global styles ([8ccfaf0](https://github.com/Jos-Flock/my-tomorrows-test/commit/8ccfaf0489708878214d861cd1575be0c85b533f))
+
+### Bug Fixes
+
+- move styles to component styles and use global styling ([42eaf27](https://github.com/Jos-Flock/my-tomorrows-test/commit/42eaf278a1e702baa7b860c1b1e204eb313de35c))
+- move styling to component styles ([803ee54](https://github.com/Jos-Flock/my-tomorrows-test/commit/803ee542c1e5ecbd29aa50b49f6cff32ac349c0e))
+- remove theme-switcher button in navbar ([197a732](https://github.com/Jos-Flock/my-tomorrows-test/commit/197a73234c7c9454a0f7eccb22ad1e8f74ff4717))
+- remove unused or empty style files ([0fd3738](https://github.com/Jos-Flock/my-tomorrows-test/commit/0fd3738554b0fd68befab79462ff56e8c33fd681))
+
 ## 0.0.1 (2023-09-18)
 
 ### Features
