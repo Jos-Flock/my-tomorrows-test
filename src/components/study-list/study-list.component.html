@@ -4,4 +4,12 @@
     <span>: {{ isPolling ? 'On' : 'Off' }}</span>
   </button>
 </div>
-<app-study-card *ngFor="let study of studiesSubject$ | async" [study]="study"></app-study-card>
+<ng-container *ngIf="!errorMessage else errorMessageTmpl">
+  <app-study-card *ngFor="let study of studiesSubject$ | async" [study]="study"></app-study-card>
+</ng-container>
+
+<ng-template #errorMessageTmpl>
+  <div class='flex-row align-center margin-top-2'>
+    <p>{{ errorMessage }}</p>
+  </div>
+</ng-template>

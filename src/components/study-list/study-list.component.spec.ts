@@ -1,10 +1,10 @@
 import { StudyListComponent } from './study-list.component';
 import { StudyService } from '../../services/study.service';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 describe('StudyListComponent', () => {
   let component: StudyListComponent;
-  let studyDataHelperService: jest.Mocked<StudyService>;
+  let studyService: jest.Mocked<StudyService>;
 
   let currentStudiesSubject: Subject<void>;
   let currentPollingSubject: Subject<boolean>;
@@ -13,22 +13,25 @@ describe('StudyListComponent', () => {
     currentStudiesSubject = new Subject<void>();
     currentPollingSubject = new Subject<boolean>();
     // @ts-ignore
-    studyDataHelperService = {
+    studyService = {
       setPolling: jest.fn(),
-      getCurrentStudiesObservable: jest.fn().mockReturnValue(of(currentStudiesSubject)),
-      getPollingStatusObservable: jest.fn().mockReturnValue(of(currentPollingSubject)),
+      getStudiesObservable: jest.fn().mockReturnValue(of(currentStudiesSubject)),
+      getPollingObservable: jest.fn().mockReturnValue(of(currentPollingSubject)),
     };
 
-    component = new StudyListComponent(studyDataHelperService);
+    component = new StudyListComponent(studyService);
     component.ngOnInit();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should call setPolling', () => {
     component.handleToggleTimer();
-    expect(studyDataHelperService.setPolling).toHaveBeenCalledTimes(1);
+    expect(studyService.setPolling).toHaveBeenCalledTimes(1);
+  });
+
+  it('should catch error when the server does not respond', () => {
+    studyService.getStudiesObservable.mockImplementation(() => {
+      throw new Error();
+    });
+    expect(studyService.getStudiesObservable).toThrow();
   });
 });

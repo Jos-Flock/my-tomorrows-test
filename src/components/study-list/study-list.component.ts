@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StudyService } from '../../services/study.service';
-import { Subject } from 'rxjs';
+import { catchError, Subject } from 'rxjs';
 import { Study } from '../../models/study';
 
 @Component({
@@ -11,19 +11,24 @@ import { Study } from '../../models/study';
 export class StudyListComponent implements OnInit {
   public studiesSubject$: Subject<Study[]> = new Subject();
   public isPolling = false;
+  public errorMessage?: string;
 
-  constructor(private readonly studyDataHelperService: StudyService) {}
+  constructor(private readonly studyService: StudyService) {}
 
   ngOnInit(): void {
-    this.studyDataHelperService
-      .getCurrentStudiesObservable()
+    this.studyService
+      .getStudiesObservable()
+      .pipe(
+        catchError(() => {
+          this.errorMessage = 'Unable to fetch studies from server.';
+          return [];
+        }),
+      )
       .subscribe(rows => this.studiesSubject$.next(rows));
-    this.studyDataHelperService
-      .getPollingStatusObservable()
-      .subscribe(newStatus => (this.isPolling = newStatus));
+    this.studyService.getPollingObservable().subscribe(newStatus => (this.isPolling = newStatus));
   }
 
   handleToggleTimer(): void {
-    this.studyDataHelperService.setPolling(!this.isPolling);
+    this.studyService.setPolling(!this.isPolling);
   }
 }
