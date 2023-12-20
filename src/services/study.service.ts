@@ -39,13 +39,13 @@ export class StudyService {
 
   private fetchData(pageLimit: number = DEFAULT_STUDY_LIMIT): Observable<Study> {
     return this.studyClient.list(pageLimit, this.nextPageToken).pipe(
-      map(res => {
-        if (res.nextPageToken !== undefined) {
-          this.nextPageToken = res.nextPageToken;
+      map(({ nextPageToken, studies }) => {
+        if (nextPageToken !== undefined) {
+          this.nextPageToken = nextPageToken;
         } else {
           this.setPolling(false);
         }
-        return res.studies.map(study => internalizeStudy(study));
+        return studies.map(internalizeStudy);
       }),
       mergeAll(),
     );
